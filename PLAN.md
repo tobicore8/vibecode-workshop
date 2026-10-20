@@ -20,11 +20,13 @@ The work is split by layer so three people can build in parallel against [docs/c
 |---|---|---|---|---|---|
 | M1.1 | Our fork runs at the assigned URL and reports its deployed revision | Team access | Thilo | `m1.1-live-page` | draft |
 | M1.2 | Shared contract agreed for storage, API and pages | IDEA.md | whole team | main | in main, agree before coding |
-| M1.3 | Storage: picnics and claims persist across restart and redeploy; first claim wins | M1.2 | Thilo | `m1.3-store` | draft |
-| M1.4 | API: create, read, claim and unclaim with validation and clear errors | M1.2 | Eduardo | `m1.4-api` | draft |
-| M1.5 | UI: create a picnic, share the link, claim and unclaim on a phone | M1.2 | Tobias | `m1.5-ui` | draft |
-| M1.6 | Integration: real store wired into the server; whole journey works at the live URL | M1.1, M1.3, M1.4, M1.5 | whole team (Thilo deploys) | `m1.6-integration` | draft |
+| M1.3 | Storage: picnics and claims persist across restart and redeploy; first claim wins | M1.2 | Thilo | `m1.3-store` | merged to main (unreviewed, see note below) |
+| M1.4 | API: create, read, claim and unclaim with validation and clear errors | M1.2 | Eduardo | `m1.4-api` | merged to main (unreviewed, see note below) |
+| M1.5 | UI: create a picnic, share the link, claim and unclaim on a phone | M1.2 | Tobias | `m1.5-ui` | merged to main; no browser verification yet |
+| M1.6 | Integration: real store wired into the server; whole journey works at the live URL | M1.1, M1.3, M1.4, M1.5 | whole team (Thilo deploys) | `m1.6-integration` | merged to main; deploy pending |
 | M1.7 | Someone outside the team completes the journey on a phone; observed failures are corrected | M1.6 | whole team | new step IDs per fix | draft |
+
+**Process note (2026-10-20):** Tobias had a single agent session implement M1.3, M1.4 and M1.6 directly (Thilo and Eduardo weren't available), to get a real deploy live on `https://team-07.intra.land` quickly. This skipped the normal independent-reviewer and separate-committer steps in `AGENTS.md` for those three steps — they're tested (see `.ai/work/M1.3`, `.ai/work/M1.4`, `.ai/work/M1.6`) but not reviewed by anyone who didn't write them. Worth a real review pass from Thilo/Eduardo once available, and definitely before trusting this past the workshop demo.
 
 **Merge order:** M1.1 any time. Then M1.3 → M1.4 → M1.5 in whatever order they are approved. Rebase on main before opening your PR. Last comes M1.6, a short wiring step: `server.mjs` creates the real store with `openStore` and passes it to `createApp`. After that, the team runs the journey together.
 
