@@ -83,9 +83,18 @@ The server serves exactly these. Adding a new file to `public/` needs a one-line
 | `/style.css` | `public/style.css` | Styles |
 | `/create.js` | `public/create.js` | Script for `index.html` |
 | `/picnic.js` | `public/picnic.js` | Script for `picnic.html` |
+| `/background.jpg` | `public/background.jpg` | Background photo, referenced from `style.css` |
 
 - Show user text with `textContent`, never `innerHTML`.
 - Remember the guest's name in `localStorage` on that device. It's only a convenience. The server is the source of truth.
 - Show "Unclaim" only on items claimed by the name stored on this device.
 - After a `409`, show the message and redraw from the returned `picnic`.
 - It has to work at phone width (about 375 px) first.
+
+## Outstanding for M1.4 (Eduardo)
+
+`public/` on `m1.5-ui` now has all five files above, including `background.jpg` (~1.2 MB, added after this contract was first written). `server.mjs`'s asset map currently only has `/` and `/style.css`. To close the gap:
+
+1. Add to the `assets` map in `server.mjs`: `/p/:id` → serve `public/picnic.html` for any id (dynamic, not a literal map entry), `/create.js` → `public/create.js` (`text/javascript`), `/picnic.js` → `public/picnic.js` (`text/javascript`), `/background.jpg` → `public/background.jpg` (`image/jpeg`).
+2. Build the four `POST`/`GET` routes in the HTTP API table above, backed by `createApp({ revision, store })` so M1.4 can be tested with a fake store before M1.3 merges.
+3. Pull `m1.5-ui` (or cherry-pick its `public/` commits) to get the actual files these routes need to serve — they don't exist on `main` yet.
