@@ -29,6 +29,8 @@ The work is split by layer so three people can build in parallel against [docs/c
 
 **Process note (2026-10-20):** Tobias had a single agent session implement M1.3, M1.4 and M1.6 directly (Thilo and Eduardo weren't available), to get a real deploy live on `https://team-07.intra.land` quickly. This skipped the normal independent-reviewer and separate-committer steps in `AGENTS.md` for those three steps — they're tested (see `.ai/work/M1.3`, `.ai/work/M1.4`, `.ai/work/M1.6`) but not reviewed by anyone who didn't write them. Worth a real review pass from Thilo/Eduardo once available, and definitely before trusting this past the workshop demo.
 
+**M1.9, tried and reverted (2026-10-20):** Added a picnic time field alongside date, deployed it, fixed a styling bug in it, then Tobias asked for it to be removed entirely ("its not good" — no further detail on what specifically). Reverted via `git revert` rather than a fresh removal commit, so the change is fully undone in both `main` and the deployed revision. Nothing from this attempt remains in the data shape, API or UI. If time-of-day turns out to matter later, re-propose it as a fresh step rather than resurrecting this one — worth asking what specifically didn't work before trying again.
+
 ### M1.8 — Claim authorization (observed feedback, not a planned milestone)
 
 **Observed problem:** Tobias claimed an item under his name, forwarded the picnic link to someone else, and that second person could type "Tobias" and unclaim the item — nothing tied the claim to *his* device. This directly broke the acceptance in [IDEA.md](IDEA.md)'s now-resolved assumption about names being enough identity.
