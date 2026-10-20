@@ -1,3 +1,9 @@
 # Current focus
 
-M13.27 native guest deploy on `ikodo0/m13.27-native-guest-deploy`. Release pruning, a 2G install/build scope, and one deploy lock are committed and waiting for re-review (`c90b3a1`, `f11b2ea`). No guest was available, so the memory scope was proven only on this machine's user manager. Nothing has been pushed or merged.
+Picnic Planner, M1. IDEA.md and PLAN.md are drafted, and the work is split across three people by layer (see [docs/team.md](../docs/team.md)). The parallel steps share [docs/contract.md](../docs/contract.md).
+
+- Thilo: M1.1 live page, then M1.3 storage.
+- Eduardo: M1.4 API.
+- Tobias: M1.5 UI.
+
+Next: the team agrees the contract and the open decisions in IDEA.md, then each person starts their own branch from main. No step code exists yet.
