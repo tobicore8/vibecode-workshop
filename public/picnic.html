@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Claim what you'll bring to the picnic.">
+  <title>Picnic · Picnic Planner</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header><a class="wordmark" href="/">PICNIC<span> / PLANNER</span></a></header>
+  <main>
+    <div id="loading">Loading picnic…</div>
+
+    <div id="not-found" hidden>
+      <h1>Can’t find that picnic.</h1>
+      <p class="intro">The link may be wrong, or the picnic was never created. Check it with whoever shared it.</p>
+    </div>
+
+    <div id="picnic-view" hidden>
+      <h1 id="picnic-name"></h1>
+      <p class="meta" id="picnic-meta"></p>
+
+      <div class="you">
+        <label for="your-name">Your name</label>
+        <input id="your-name" type="text" maxlength="40" placeholder="So we know who’s bringing what">
+        <button type="button" id="copy-link" class="secondary">Copy link</button>
+      </div>
+
+      <p class="count" id="count"></p>
+      <p class="error" id="action-error" hidden></p>
+
+      <section>
+        <h2>Still needed</h2>
+        <ul class="claim-list" id="unclaimed"></ul>
+        <p class="empty-note" id="unclaimed-empty" hidden>Everything’s covered.</p>
+      </section>
+
+      <section>
+        <h2>Covered</h2>
+        <ul class="claim-list" id="claimed"></ul>
+        <p class="empty-note" id="claimed-empty" hidden>Nothing claimed yet — be the first.</p>
+      </section>
+    </div>
+  </main>
+  <footer><span>No accounts. The name you type is remembered on this device only.</span></footer>
+  <script src="/picnic.js"></script>
+</body>
+</html>

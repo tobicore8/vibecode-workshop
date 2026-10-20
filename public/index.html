@@ -3,24 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Your workshop starting point: one idea, one team, one useful live demo.">
-  <title>Your first live step · Vibecode workshop</title>
+  <meta name="description" content="Create a picnic checklist and share one link so everyone knows what to bring.">
+  <title>Picnic Planner</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header><a class="wordmark" href="/">VIBECODE<span> / WORKSHOP</span></a><span class="status">Starting point</span></header>
+  <header><a class="wordmark" href="/">PICNIC<span> / PLANNER</span></a></header>
   <main>
-    <p class="eyebrow">01 / Make something useful</p>
-    <h1>An idea is a start.<br>A working demo is proof.</h1>
-    <p class="intro">Your app is running. Now pick one person, one problem and one action you can help them complete.</p>
-    <ol class="steps">
-      <li><span class="number">01</span><h2>Agree the goal.</h2><p>Write who it helps and what they can do. Challenge what you are assuming.</p></li>
-      <li><span class="number">02</span><h2>Build one step.</h2><p>Give the agent an outcome and cases to check. Keep the change small enough to review.</p></li>
-      <li><span class="number">03</span><h2>Watch it work.</h2><p>Review the change. Let someone try the task. Use what happens to choose your next step.</p></li>
-    </ol>
-    <a class="action" href="https://intra.land/vibecode">Open the workshop <span aria-hidden="true">↗</span></a>
-    <p class="next">Your next move: agree the first useful journey with your team.</p>
+    <h1>Plan the picnic.<br>Share one link.</h1>
+    <p class="intro">Add what's needed. Everyone on the link claims something, so nothing gets doubled up and nothing gets forgotten.</p>
+
+    <form id="create-form" novalidate>
+      <p class="error" id="form-error" hidden></p>
+
+      <label for="name">Picnic name</label>
+      <input id="name" name="name" type="text" maxlength="80" placeholder="Sunday in the park" required>
+
+      <div class="row">
+        <div>
+          <label for="date">Date <span class="optional">(optional)</span></label>
+          <input id="date" name="date" type="date">
+        </div>
+        <div>
+          <label for="place">Place <span class="optional">(optional)</span></label>
+          <input id="place" name="place" type="text" maxlength="120" placeholder="Tiergarten, by the pond">
+        </div>
+      </div>
+
+      <label>Things needed</label>
+      <ul class="items" id="items"></ul>
+      <button type="button" class="secondary" id="add-item">+ Add item</button>
+
+      <button type="submit" id="submit">Create picnic</button>
+    </form>
   </main>
-  <footer><span>Plan small. Review honestly. Ship live.</span><a href="/api/health">Check this app</a></footer>
+  <footer><span>No accounts. The link is the invite.</span></footer>
+  <script src="/create.js"></script>
 </body>
 </html>
