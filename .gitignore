@@ -8,3 +8,5 @@ coverage/
 .DS_Store
 .ai/private/
 .ai/browser/
+team-*.key
+team-*.known_hosts
