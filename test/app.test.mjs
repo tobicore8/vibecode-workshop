@@ -120,42 +120,91 @@ test('get: unknown picnic returns 404', async t => {
   assert.equal(response.status, 404);
 });
 
-test('claim conflict returns 409 with the current picnic; wrong-name unclaim returns 409', async t => {
+test('claim returns a claim token that never appears in a plain GET', async t => {
   const origin = await fixture(t, { withStore: true });
   const created = await fetch(`${origin}/api/picnics`, {
     method: 'POST', headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ name: 'Sunday', items: ['Cups'] }),
   }).then(r => r.json());
+  const { id } = created.picnic;
   const itemId = created.picnic.items[0].id;
-  const id = created.picnic.id;
+
+  const claimed = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/claim`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Alice' }),
+  }).then(r => r.json());
+  assert.ok(claimed.claimToken, 'claim response carries a token');
+  assert.equal('claimToken' in claimed.picnic.items[0], false, 'the picnic object itself never carries the token');
+
+  const fetched = await fetch(`${origin}/api/picnics/${id}`).then(r => r.json());
+  assert.equal('claimToken' in fetched.picnic.items[0], false, 'a later GET does not leak it either');
+});
+
+test('claiming under someone else\'s typed name with no token is still a conflict (no impersonation)', async t => {
+  const origin = await fixture(t, { withStore: true });
+  const created = await fetch(`${origin}/api/picnics`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name: 'Sunday', items: ['Cups'] }),
+  }).then(r => r.json());
+  const { id } = created.picnic;
+  const itemId = created.picnic.items[0].id;
 
   const claimed = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/claim`, {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Alice' }),
   });
   assert.equal(claimed.status, 200);
 
-  const conflict = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/claim`, {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Bob' }),
+  // A second "device" that only knows (or forwards) Alice's name, without her token.
+  const impersonatedClaim = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/claim`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Alice' }),
   });
-  assert.equal(conflict.status, 409);
-  const conflictBody = await conflict.json();
-  assert.ok(conflictBody.error);
-  assert.equal(conflictBody.picnic.items[0].claimedBy, 'Alice');
+  assert.equal(impersonatedClaim.status, 409);
 
-  const wrongUnclaim = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/unclaim`, {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Bob' }),
+  const impersonatedUnclaim = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/unclaim`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Alice' }),
   });
-  assert.equal(wrongUnclaim.status, 409);
+  assert.equal(impersonatedUnclaim.status, 400, 'no claimToken at all is a bad request, not an authorized unclaim');
 });
 
-test('claim/unclaim without a name returns 400', async t => {
+test('unclaiming with the real token works; a wrong token is a 409 conflict', async t => {
   const origin = await fixture(t, { withStore: true });
   const created = await fetch(`${origin}/api/picnics`, {
     method: 'POST', headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ name: 'Sunday', items: ['Cups'] }),
   }).then(r => r.json());
-  const response = await fetch(`${origin}/api/picnics/${created.picnic.id}/items/${created.picnic.items[0].id}/claim`, {
+  const { id } = created.picnic;
+  const itemId = created.picnic.items[0].id;
+
+  const { claimToken } = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/claim`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Alice' }),
+  }).then(r => r.json());
+
+  const wrongToken = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/unclaim`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claimToken: 'not-the-real-token' }),
+  });
+  assert.equal(wrongToken.status, 409);
+
+  const realUnclaim = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/unclaim`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claimToken }),
+  });
+  assert.equal(realUnclaim.status, 200);
+});
+
+test('claim without a name, or unclaim without a claimToken, returns 400', async t => {
+  const origin = await fixture(t, { withStore: true });
+  const created = await fetch(`${origin}/api/picnics`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name: 'Sunday', items: ['Cups'] }),
+  }).then(r => r.json());
+  const itemId = created.picnic.items[0].id;
+  const { id } = created.picnic;
+
+  const noName = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/claim`, {
     method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}),
   });
-  assert.equal(response.status, 400);
+  assert.equal(noName.status, 400);
+
+  const noToken = await fetch(`${origin}/api/picnics/${id}/items/${itemId}/unclaim`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}),
+  });
+  assert.equal(noToken.status, 400);
 });

@@ -116,18 +116,27 @@ export function createApp({ revision = process.env.APP_REVISION || 'development'
       const [, id, itemId, action] = actionMatch;
       const body = await readJsonBody(req, res);
       if (body === INVALID_BODY) return;
-      const name = typeof body.name === 'string' ? body.name.trim() : '';
-      if (!name) return sendJson(res, 400, { error: 'Your name is required.' });
+      const claimToken = typeof body.claimToken === 'string' ? body.claimToken : null;
 
-      const result = action === 'claim'
-        ? await store.claimItem(id, itemId, name)
-        : await store.unclaimItem(id, itemId, name);
+      let result;
+      if (action === 'claim') {
+        const name = typeof body.name === 'string' ? body.name.trim() : '';
+        if (!name) return sendJson(res, 400, { error: 'Your name is required.' });
+        result = await store.claimItem(id, itemId, name, claimToken);
+      } else {
+        if (!claimToken) return sendJson(res, 400, { error: 'Missing claim token — unclaim only works from the device that claimed it.' });
+        result = await store.unclaimItem(id, itemId, claimToken);
+      }
 
-      if (result.ok) return sendJson(res, 200, { picnic: result.picnic });
+      if (result.ok) {
+        return sendJson(res, 200, action === 'claim'
+          ? { picnic: result.picnic, claimToken: result.token }
+          : { picnic: result.picnic });
+      }
       if (result.reason === 'not_found') return sendJson(res, 404, { error: 'Picnic or item not found.' });
       const message = result.reason === 'taken'
         ? 'Someone else already claimed this.'
-        : 'Only the person who claimed this can unclaim it.';
+        : 'Only the device that claimed this item can unclaim it.';
       return sendJson(res, 409, { error: message, picnic: result.picnic });
     }
 

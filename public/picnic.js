@@ -1,4 +1,5 @@
 const NAME_KEY = 'picnicPlannerName';
+const TOKENS_KEY = 'picnicPlannerClaimTokens';
 
 const id = location.pathname.replace(/^\/p\//, '').replace(/\/$/, '');
 
@@ -13,6 +14,25 @@ const unclaimedList = document.getElementById('unclaimed');
 const claimedList = document.getElementById('claimed');
 const unclaimedEmpty = document.getElementById('unclaimed-empty');
 const claimedEmpty = document.getElementById('claimed-empty');
+
+// Claim tokens prove *this device* made a given claim — unlike the typed
+// name, they're a secret the server only ever hands back once, to the
+// claimer. Only a token match authorizes unclaiming; the name is display-only.
+function loadTokens() {
+  try {
+    return JSON.parse(localStorage.getItem(TOKENS_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+function tokenFor(itemId) {
+  return loadTokens()[`${id}:${itemId}`] || null;
+}
+function saveToken(itemId, token) {
+  const tokens = loadTokens();
+  tokens[`${id}:${itemId}`] = token;
+  localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
+}
 
 nameInput.value = localStorage.getItem(NAME_KEY) || '';
 nameInput.addEventListener('input', () => {
@@ -56,7 +76,7 @@ function itemRow(item, { claimed }) {
     by.textContent = `${item.claimedBy} is bringing this`;
     li.appendChild(by);
 
-    if (item.claimedBy === myName) {
+    if (tokenFor(item.id)) {
       const unclaim = document.createElement('button');
       unclaim.type = 'button';
       unclaim.className = 'secondary';
@@ -99,17 +119,20 @@ function render(picnic) {
 
 async function act(action, itemId) {
   const name = nameInput.value.trim();
-  if (!name) {
+  if (action === 'claim' && !name) {
     showError('Enter your name first.');
     nameInput.focus();
     return;
   }
   showError('');
   try {
+    const payload = action === 'claim'
+      ? { name, claimToken: tokenFor(itemId) }
+      : { claimToken: tokenFor(itemId) };
     const response = await fetch(`/api/picnics/${id}/items/${itemId}/${action}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(payload),
     });
     const body = await response.json().catch(() => null);
     if (response.status === 409) {
@@ -121,6 +144,7 @@ async function act(action, itemId) {
       showError(body?.error || 'That didn’t work. Try again.');
       return;
     }
+    if (action === 'claim' && body.claimToken) saveToken(itemId, body.claimToken);
     render(body.picnic);
   } catch {
     showError('Could not reach the server. Check your connection and try again.');
