@@ -25,8 +25,21 @@ The work is split by layer so three people can build in parallel against [docs/c
 | M1.5 | UI: create a picnic, share the link, claim and unclaim on a phone | M1.2 | Tobias | `m1.5-ui` | merged to main; no browser verification yet |
 | M1.6 | Integration: real store wired into the server; whole journey works at the live URL | M1.1, M1.3, M1.4, M1.5 | whole team (Thilo deploys) | `m1.6-integration` | merged to main; deploy pending |
 | M1.7 | Someone outside the team completes the journey on a phone; observed failures are corrected | M1.6 | whole team | new step IDs per fix | draft |
+| M1.8 | Claim authorization: only the device that claimed an item can unclaim it — a forwarded link or a guessed/typed name is not enough | M1.6 (deployed) | Tobias | `m1.8-claim-auth` | merged to main (unreviewed, see note below) |
 
 **Process note (2026-10-20):** Tobias had a single agent session implement M1.3, M1.4 and M1.6 directly (Thilo and Eduardo weren't available), to get a real deploy live on `https://team-07.intra.land` quickly. This skipped the normal independent-reviewer and separate-committer steps in `AGENTS.md` for those three steps — they're tested (see `.ai/work/M1.3`, `.ai/work/M1.4`, `.ai/work/M1.6`) but not reviewed by anyone who didn't write them. Worth a real review pass from Thilo/Eduardo once available, and definitely before trusting this past the workshop demo.
+
+### M1.8 — Claim authorization (observed feedback, not a planned milestone)
+
+**Observed problem:** Tobias claimed an item under his name, forwarded the picnic link to someone else, and that second person could type "Tobias" and unclaim the item — nothing tied the claim to *his* device. This directly broke the acceptance in [IDEA.md](IDEA.md)'s now-resolved assumption about names being enough identity.
+
+**Acceptance:**
+- [x] Claiming an item returns a secret `claimToken` to the claiming device only; it is never present in any `picnic` object returned to anyone else (including the claimer's own later `GET` requests).
+- [x] Unclaiming requires that token. A request with the right name but no/wrong token gets `400`/`409`, not success.
+- [x] The same device can still re-confirm or rename its own claim (passing its stored token back on a later `claim` call).
+- [x] First-claim-wins and the conflict/not-found behaviors from M1.3/M1.4 are preserved under the new token checks.
+
+**Boundaries:** Still no accounts/login — the token lives in `localStorage`, scoped to picnic id + item id, same spirit as "the link is the access." Clearing browser storage or switching devices still means losing the ability to unclaim your own item; that's accepted for this workshop, not solved here.
 
 **Merge order:** M1.1 any time. Then M1.3 → M1.4 → M1.5 in whatever order they are approved. Rebase on main before opening your PR. Last comes M1.6, a short wiring step: `server.mjs` creates the real store with `openStore` and passes it to `createApp`. After that, the team runs the journey together.
 

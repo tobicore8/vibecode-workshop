@@ -14,6 +14,6 @@ Draft by the project lead. The team still has to agree on it. Items marked **(de
 - **What are we deliberately leaving for later?** Weather, maps, RSVPs, budgets or splitting costs, recipes, dietary tags, notifications, live updates without reload, editing permissions, multiple organisers, deleting picnics.
 - **What remains an assumption that we need to test?**
   - People will use a link instead of just replying in the group chat. This is the big one.
-  - Typing a name is enough identity, and nobody will mess with other people's claims.
+  - ~~Typing a name is enough identity, and nobody will mess with other people's claims.~~ **Tested and false** (2026-10-20, Tobias): forwarding the link also forwards the ability to unclaim, since a second device can type the same name. Fixed in M1.8 — the server now hands back a per-claim secret token that only the claiming device holds; unclaim requires that token, not the name. The name stays purely for display ("X is bringing this").
   - One person per item is enough. Whether quantities matter ("3 × blankets") is **(decide)**.
   - Whether guests can add items, or only the organiser can, is **(decide)**.
