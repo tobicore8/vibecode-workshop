@@ -102,7 +102,8 @@ function render(picnic) {
   if (!picnic) return;
 
   document.getElementById('picnic-name').textContent = picnic.name;
-  const metaParts = [picnic.date, picnic.place].filter(Boolean);
+  const when = [picnic.date, picnic.time].filter(Boolean).join(' at ');
+  const metaParts = [when, picnic.place].filter(Boolean);
   document.getElementById('picnic-meta').textContent = metaParts.join(' · ');
 
   const claimed = picnic.items.filter(item => item.claimedBy);

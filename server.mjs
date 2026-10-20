@@ -51,6 +51,9 @@ function validateCreateInput(body) {
   const date = typeof body.date === 'string' ? body.date : '';
   if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: 'Date must look like YYYY-MM-DD.' };
 
+  const time = typeof body.time === 'string' ? body.time : '';
+  if (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return { error: 'Time must look like HH:MM, 24-hour.' };
+
   const place = typeof body.place === 'string' ? body.place.trim() : '';
   if (place.length > 120) return { error: 'Place must be 120 characters or fewer.' };
 
@@ -62,7 +65,7 @@ function validateCreateInput(body) {
   if (items.length > 50) return { error: 'Add 50 items or fewer.' };
   if (items.some(item => item.length > 80)) return { error: 'Items must be 80 characters or fewer.' };
 
-  return { value: { name, date, place, items } };
+  return { value: { name, date, time, place, items } };
 }
 
 export function createApp({ revision = process.env.APP_REVISION || 'development', store } = {}) {
