@@ -1,9 +1,8 @@
 # Current focus
 
-Picnic Planner, M1. IDEA.md and PLAN.md are drafted, and the work is split across three people by layer (see [docs/team.md](../docs/team.md)). The parallel steps share [docs/contract.md](../docs/contract.md).
+Picnic Planner, M1. The full M1 journey (create → share → claim → unclaim, persisted) is implemented and merged to `main`: M1.3 storage (`lib/store.mjs`), M1.4 API (`server.mjs` routes), M1.5 UI (`public/`), M1.6 integration (real store wired in). All test suites pass locally except a pre-existing, environment-specific `deploy.test.mjs` failure (`flock` missing on macOS — expected fine on the Linux guest).
 
-- Thilo: M1.1 live page, then M1.3 storage.
-- Eduardo: M1.4 API.
-- Tobias: M1.5 UI.
+- M1.3/M1.4/M1.6 were built by Tobias's session directly (Thilo/Eduardo unavailable), skipping the normal independent-reviewer/committer split — see the process note in `PLAN.md`. Needs a real review pass later.
+- M1.5 (UI) still has no browser-based visual verification — only HTTP/curl-level checks and code review.
 
-Next: the team agrees the contract and the open decisions in IDEA.md, then each person starts their own branch from main. No step code exists yet.
+Next: deploy `main` to the team guest (`https://team-07.intra.land`) and verify the live journey; then get Thilo/Eduardo to review the unreviewed steps when available; then M1.7 (watch an outsider use it).
