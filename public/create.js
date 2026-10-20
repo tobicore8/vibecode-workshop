@@ -56,6 +56,7 @@ form.addEventListener('submit', async event => {
 
   const name = document.getElementById('name').value.trim();
   const date = document.getElementById('date').value;
+  const time = document.getElementById('time').value;
   const place = document.getElementById('place').value.trim();
   const items = [...itemsList.querySelectorAll('.item-input')]
     .map(input => input.value.trim())
@@ -69,7 +70,7 @@ form.addEventListener('submit', async event => {
     const response = await fetch('/api/picnics', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name, date, place, items }),
+      body: JSON.stringify({ name, date, time, place, items }),
     });
     const body = await response.json().catch(() => null);
     if (!response.ok) {
