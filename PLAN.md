@@ -26,7 +26,6 @@ The work is split by layer so three people can build in parallel against [docs/c
 | M1.6 | Integration: real store wired into the server; whole journey works at the live URL | M1.1, M1.3, M1.4, M1.5 | whole team (Thilo deploys) | `m1.6-integration` | merged to main; deploy pending |
 | M1.7 | Someone outside the team completes the journey on a phone; observed failures are corrected | M1.6 | whole team | new step IDs per fix | draft |
 | M1.8 | Claim authorization: only the device that claimed an item can unclaim it — a forwarded link or a guessed/typed name is not enough | M1.6 (deployed) | Tobias | `m1.8-claim-auth` | merged to main (unreviewed, see note below) |
-| M1.9 | A picnic has a time as well as a date, shown together on the picnic page | M1.6 (deployed) | Tobias | `m1.9-picnic-time` | merged to main (unreviewed, see note below) |
 
 **Process note (2026-10-20):** Tobias had a single agent session implement M1.3, M1.4 and M1.6 directly (Thilo and Eduardo weren't available), to get a real deploy live on `https://team-07.intra.land` quickly. This skipped the normal independent-reviewer and separate-committer steps in `AGENTS.md` for those three steps — they're tested (see `.ai/work/M1.3`, `.ai/work/M1.4`, `.ai/work/M1.6`) but not reviewed by anyone who didn't write them. Worth a real review pass from Thilo/Eduardo once available, and definitely before trusting this past the workshop demo.
 

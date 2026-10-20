@@ -12,9 +12,8 @@ async function tempDir(t) {
 
 test('create then get returns the same picnic, with no claimToken leaked', async t => {
   const store = await openStore({ dir: await tempDir(t) });
-  const created = await store.createPicnic({ name: 'Sunday', date: '2026-10-25', time: '15:30', place: 'Park', items: ['Cups', 'Blanket'] });
+  const created = await store.createPicnic({ name: 'Sunday', date: '2026-10-25', place: 'Park', items: ['Cups', 'Blanket'] });
   assert.equal(created.name, 'Sunday');
-  assert.equal(created.time, '15:30');
   assert.equal(created.items.length, 2);
   assert.ok(created.id.length >= 22);
   assert.equal('claimToken' in created.items[0], false);

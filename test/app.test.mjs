@@ -72,31 +72,13 @@ test('create: valid input returns 201 with a picnic', async t => {
   const response = await fetch(`${origin}/api/picnics`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'Sunday in the park', date: '2026-10-25', time: '15:30', place: 'Tiergarten', items: ['Cups', 'Blanket'] }),
+    body: JSON.stringify({ name: 'Sunday in the park', date: '2026-10-25', place: 'Tiergarten', items: ['Cups', 'Blanket'] }),
   });
   assert.equal(response.status, 201);
   const { picnic } = await response.json();
   assert.equal(picnic.name, 'Sunday in the park');
-  assert.equal(picnic.time, '15:30');
   assert.equal(picnic.items.length, 2);
   assert.ok(picnic.id.length >= 22);
-});
-
-test('create: an invalid time is rejected, a missing time is fine', async t => {
-  const origin = await fixture(t, { withStore: true });
-  const badTime = await fetch(`${origin}/api/picnics`, {
-    method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'Sunday', time: '25:99', items: ['Cups'] }),
-  });
-  assert.equal(badTime.status, 400);
-
-  const noTime = await fetch(`${origin}/api/picnics`, {
-    method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ name: 'Sunday', items: ['Cups'] }),
-  });
-  assert.equal(noTime.status, 201);
-  const { picnic } = await noTime.json();
-  assert.equal(picnic.time, '');
 });
 
 test('create: missing name or no items returns 400', async t => {

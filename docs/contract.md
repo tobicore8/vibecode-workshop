@@ -19,7 +19,6 @@ Shared files (`PLAN.md`, `IDEA.md`, this contract, `package.json`) change only t
   "id": "k3J9x0Qm2LpZ7vT1nB8cRw",
   "name": "Sunday in the park",
   "date": "2026-10-25",
-  "time": "15:30",
   "place": "Tiergarten, by the pond",
   "createdAt": "2026-10-20T12:00:00.000Z",
   "items": [
@@ -31,7 +30,7 @@ Shared files (`PLAN.md`, `IDEA.md`, this contract, `package.json`) change only t
 
 - `id`: picnic id, URL-safe, at least 22 random characters, so links can't be guessed.
 - `name`: 1–80 characters after trimming. Required.
-- `date`: `"YYYY-MM-DD"` or `""`. `time`: `"HH:MM"` (24-hour) or `""`. `place`: 0–120 characters.
+- `date`: `"YYYY-MM-DD"` or `""`. `place`: 0–120 characters.
 - `items`: 1–50 items. `label` is 1–80 characters after trimming. Item `id` is unique within its picnic.
 - `claimedBy`: `null` or a name of 1–40 characters after trimming. **Display only — carries no authorization.**
 - `claimToken`: `null` or a random server-generated secret. This is what actually authorizes unclaiming (and re-claiming) an item — never the name. It is stored **internally only**; any picnic object returned to a caller (create, get, claim, unclaim) must have this field stripped from every item. The one exception is a successful claim's response, which returns the new/existing token in a separate top-level `claimToken` field, once, to the claimer only.
@@ -42,7 +41,7 @@ Why: a typed name is public — anyone reading the shared page, or the person wh
 
 ```js
 export async function openStore({ dir })                    // → store
-store.createPicnic({ name, date, time, place, items: ['Cups', 'Blanket'] }) // → picnic (no claimToken fields)
+store.createPicnic({ name, date, place, items: ['Cups', 'Blanket'] }) // → picnic (no claimToken fields)
 store.getPicnic(id)                                          // → picnic | null (no claimToken fields)
 store.claimItem(id, itemId, name, token = null)               // → { ok: true, picnic, token } | { ok: false, reason, picnic }
 store.unclaimItem(id, itemId, token)                          // → { ok: true, picnic } | { ok: false, reason, picnic }
@@ -68,7 +67,7 @@ Requests and responses are JSON with `content-type: application/json`. Errors re
 
 | Method & path | Body | Success | Errors |
 |---|---|---|---|
-| `POST /api/picnics` | `{ name, date?, time?, place?, items: [string] }` | `201 { picnic }` | `400` invalid input |
+| `POST /api/picnics` | `{ name, date?, place?, items: [string] }` | `201 { picnic }` | `400` invalid input |
 | `GET /api/picnics/:id` | — | `200 { picnic }` | `404` |
 | `POST /api/picnics/:id/items/:itemId/claim` | `{ name, claimToken? }` | `200 { picnic, claimToken }` | `400` no name, `404`, `409 { error, picnic }` taken |
 | `POST /api/picnics/:id/items/:itemId/unclaim` | `{ claimToken }` | `200 { picnic }` | `400` no claimToken, `404`, `409 { error, picnic }` not yours |
@@ -85,7 +84,7 @@ The server serves exactly these. Adding a new file to `public/` needs a one-line
 
 | URL | File | Purpose |
 |---|---|---|
-| `/` | `public/index.html` | Create a picnic: name, date, time, place, items. On success, go to `/p/<id>` |
+| `/` | `public/index.html` | Create a picnic: name, date, place, items. On success, go to `/p/<id>` |
 | `/p/:id` | `public/picnic.html` | The shared picnic page. JS reads the id from `location.pathname` |
 | `/style.css` | `public/style.css` | Styles |
 | `/create.js` | `public/create.js` | Script for `index.html` |
