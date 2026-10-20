@@ -1,6 +1,15 @@
 :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #15171c; color: #f2eee6; }
 * { box-sizing: border-box; }
-body { margin: 0; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #15171c;
+  background-image: linear-gradient(rgba(21, 23, 28, .78), rgba(21, 23, 28, .88)), url('/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+@media (min-width: 48rem) { body { background-attachment: fixed; } }
 a { color: inherit; text-underline-offset: .25em; }
 a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #ff8b54; outline-offset: 3px; }
 header, footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem clamp(1.25rem, 6vw, 6rem); flex-wrap: wrap; }
